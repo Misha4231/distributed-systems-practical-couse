@@ -58,3 +58,18 @@ services:
         alembic upgrade head &&
         poetry run pytest -v
       "
+
+  coordinator_test:
+    build: 
+      dockerfile: coordinator/Dockerfile
+      context: .
+    env_file:
+      coordinator/.env.test
+    working_dir: /app/coordinator
+    volumes:
+      - ./common:/app/common
+      - ./coordinator:/app/coordinator
+    command: >
+      sh -c "
+        poetry run pytest -v
+      "

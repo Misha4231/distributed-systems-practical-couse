@@ -6,7 +6,7 @@ from common.schemas.purchase import (
     PrepareResponse,
     UserCommitResponse,
     BookCommitResponse,
-    BookPrepareResponse
+    BookPrepareResponse,
 )
 
 # --------------- HELPER HTTP FUNCTIONS FOR PREPARE AND COMMIT -------------------

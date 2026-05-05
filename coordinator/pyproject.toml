@@ -11,6 +11,7 @@ fastapi = "^0.136.1"
 httpx = "^0.28.1"
 uvicorn = "^0.46.0"
 common = "^0.1.1"
+mock = "^5.2.0"
 
 [tool.poetry.group.local.dependencies]
 common = { path = "../common", develop = true }

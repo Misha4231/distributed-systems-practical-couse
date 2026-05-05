@@ -38,7 +38,9 @@ async def purchase(request: PurchaseRequest) -> PurchaseResponse:
             transaction_id=transaction_id,
             reason=book_vote.reason,
         )
-        raise InsufficientStockError(book_vote.reason if book_vote.reason else "Insufficient stock")
+        raise InsufficientStockError(
+            book_vote.reason if book_vote.reason else "Insufficient stock"
+        )
 
     try:
         user_vote = await http.prepare_user(
@@ -56,7 +58,9 @@ async def purchase(request: PurchaseRequest) -> PurchaseResponse:
         )
         # Book already prepared, must roll it back before surfacing the error
         await http.rollback_book(transaction_id)
-        raise InsufficientBalanceError(user_vote.reason if user_vote.reason else "Insufficient balance")
+        raise InsufficientBalanceError(
+            user_vote.reason if user_vote.reason else "Insufficient balance"
+        )
 
     logger.info("purchase_both_voted_yes", transaction_id=transaction_id)
 
