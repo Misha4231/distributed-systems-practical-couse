@@ -23,6 +23,7 @@ httpx = "^0.28.1"
 psycopg = "^3.3.3"
 anyio = "^4.13.0"
 common = "^0.1.1"
+mock = "^5.2.0"
 
 [tool.poetry.group.local.dependencies]
 common = { path = "../common", develop = true }

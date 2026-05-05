@@ -1,7 +1,9 @@
 import pytest
+from mock import patch
 
 from httpx import AsyncClient, ASGITransport
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, AsyncEngine
+from sqlalchemy import text
 
 from user_service.main import app
 from common.core.database import get_db
@@ -23,3 +25,16 @@ async def client(db_session: AsyncSession):
         yield ac
 
     app.dependency_overrides.clear()
+
+
+@pytest.fixture(autouse=True)
+def patch_user_service_engine(test_engine: AsyncEngine):
+    with patch("user_service.services.purchases.engine", test_engine):
+        yield
+
+
+@pytest.fixture
+def tables_to_cleanup() -> list[str]:
+    return [
+        "users",
+    ]
