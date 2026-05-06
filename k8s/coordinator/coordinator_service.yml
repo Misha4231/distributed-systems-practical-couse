@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: coordinator-api-service
+spec:
+  selector:
+    app: coordinator-api
+  ports:
+  - port: 8000
+    targetPort: 8000

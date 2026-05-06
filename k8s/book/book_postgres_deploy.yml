@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: books-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: books-postgres
+  template:
+    metadata:
+      labels:
+        app: books-postgres
+    spec:
+      containers:
+      - name: books-postgres
+        image: postgres:16
+        args:
+          - postgres
+          - -c
+          - max_prepared_transactions=1000
+        envFrom:
+          - secretRef:
+              name: books-db-secret
+        ports:
+          - containerPort: 5432
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        volumeMounts:
+          - name: postgres-storage
+            mountPath: /var/lib/postgresql/data
+        readinessProbe:
+          exec:
+            command: ["pg_isready", "-U", "postgres"]
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: books-postgres-pvc

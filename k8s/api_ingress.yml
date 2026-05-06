@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-ingress
+  labels:
+    app.kubernetes.io/name: api-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+        - pathType: Prefix
+          path: "/users"
+          backend:
+            service:
+              name: users-api-service
+              port: 
+                number: 8000
+        - pathType: Prefix
+          path: "/books"
+          backend:
+            service:
+              name: books-api-service
+              port: 
+                number: 8000
+        - pathType: Prefix
+          path: "/orders"
+          backend:
+            service:
+              name: coordinator-api-service
+              port: 
+                number: 8000

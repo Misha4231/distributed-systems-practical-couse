@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: books-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: books-api
+  template:
+    metadata:
+      labels:
+        app: books-api
+    spec:
+      initContainers:
+        - name: run-migrations
+          image: misha654/purchase-books-api:latest
+          workingDir: /app/book-service
+          command:
+            - sh
+            - -c
+            - |
+              until pg_isready -h books-db-service -U books; do
+                echo "Waiting for db..."
+                sleep 1
+              done
+              alembic upgrade head
+          envFrom:
+            - secretRef:
+                name: books-db-secret
+      containers:
+      - name: books-api
+        image: misha654/purchase-books-api:latest
+        workingDir: /app/book-service
+        command:
+          - uvicorn
+          - book_service.main:app
+          - --host
+          - "0.0.0.0"
+          - --port
+          - "8000"
+        envFrom:
+          - secretRef:
+              name: books-db-secret
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8000
