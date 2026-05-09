@@ -130,28 +130,28 @@ Running 20 services locally can be painful. We will use docker compose for that.
 
 ## Users microservice imlementation
 
-I want to mention that I am expecting from you some basic knowledge of
-how backend services are working and what is docker and databases. I'll try to
-explain more complicated things.
+I want to mention that I expect you to have some basic knowledge of
+how backend services work, as well as general understanding of docker
+and databases. I'll try to explain the more complicated concepts.
 
 Let's start with the users microservice. We will use
-poetry as a package manager. Poetry is something similar to pip
-but better because it solves dependency version issues for us.
+poetry as our package manager. Poetry is something similar to `pip`
+but it is better at managing dependency versions.
 
 ```bash
 poetry new user-service
 ```
-That command will create python project with pyproject.toml, source folder
-and tests folder.
+That command will create python project with `pyproject.toml` file, a source folder
+and a tests folder.
 
 Let's install needed libraries:
 ```bash
 poetry add fastapi sqlalchemy pydantic pydantic-settings alembic psycopg2-binary asyncpg structlog
 ```
 
-Let's define kind of basic folders structure for
-our microservices. FastAPI does not provide us with template
-so I will stick to the standards.
+Let's define a basic folder structure for
+our microservice. FastAPI does not provide a template
+so I will follow the common convension.
 
 ```
 .
@@ -177,7 +177,7 @@ so I will stick to the standards.
         └── __init__.py
 ```
 
-in main.py we will just create an app object, add middlewares and routes.
+in `main.py` we will just create the application object, add middlewares and routes.
 ```python
 from fastapi import FastAPI
 
@@ -187,7 +187,7 @@ app = FastAPI()
 app.include_router(users.router)
 ```
 
-let's also create the route for CRUD endpoints
+let's also create the route for the CRUD endpoints
 routes/users.py:
 ```python
 from fastapi import APIRouter
@@ -199,13 +199,14 @@ async def get_users():
     return {"status": "ok"}
 ```
 
-Here you have endpoint that just return status json.
-I like to start with the environment setup so that we
-can easiy run code and test it. That is why I will
-leave that endpoint for now and we will get back to it later.
+This endpoint simply returns a json object with a status message.
 
-Let's add connection to the database. We will asyncronous sqlalchemy
-with postgres. Database session will be created with dependency injection.
+I like to start with the environment setup so that we
+can easiy run code and test the application. That is why I will
+leave this endpoint as is for now and we will get back to it later.
+
+Let's add connection to the database. We will asyncronous `sqlalchemy`
+with `postgres`. Database session will be created with dependency injection.
 
 core/database.py:
 ```python
@@ -241,18 +242,18 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
         yield session
 ```
 
-We are using asyncpg because I want to make connection asyncronous. Sometimes it will
+We are using `asyncpg` because I want the database connection to be asyncronous. Sometimes it will
 make the code more complex, but also will make it faster.
 
-I decided to use REPEATABLE READ isolation level because it will cover our needs in that tutorial.
+I decided to use `REPEATABLE READ` isolation level because it will cover our needs in that tutorial.
 There are more levels in databases, you can read about them more detaily in other articles.
-REPEATABLE READ will ensure that data won't change when we are reading it in transaction.
+`REPEATABLE READ` will ensure that data does not change while it is being read in transaction.
 
-In sessionmaker I am disabling autoflush, autocommit and expire_on_commit because sometimes it will come handy
-to make it manually. Disabled expire_on_commit will make sure that after commit we will still be able to use data
+In `sessionmaker` I am disabling `autoflush`, `autocommit` and `expire_on_commit` because sometimes it will come handy
+to make it manually. Disabled `expire_on_commit` will make sure that after commit we will still be able to use data
 that we got earlier.
 
-get_db is the dependency injection that will give us database session.
+`get_db` is the dependency injection that will give us database session.
 
 Also as you see, we got to load the settings from environment variables to have database credentials.
 To load that data we will create
@@ -273,9 +274,9 @@ class Settings(BaseSettings):
 settings = Settings()
 ```
 
-pydantic will match environment variables with settings class fields.
+`pydantic` will match environment variables with settings class fields.
 
-Now let's write model for the table that will hold user data.
+Now let's write model for the table that will store user data.
 models/base.py
 ```python
 from sqlalchemy.orm import declarative_base
@@ -294,7 +295,7 @@ class TimeStampedModel(Model):
     )
 ```
 
-Here we are creating Model that is inherited in each model and TimeStampedModel that we will inherit
+Here we are creating Model that is inherited in each model and `TimeStampedModel` that we will inherit
 in models where we want to store the creating and updating timestamps for each row.
 
 models/user.py
@@ -312,7 +313,7 @@ class User(TimeStampedModel):
     balance = Column(DECIMAL(8, 2), default=0)
 ```
 
-User model is inherits TimeStampedModel so it will have columns: id, name, balance, create_at and updated_at.
+User model is inherits `TimeStampedModel` so it will have columns: `id`, `name`, `balance`, `create_at` and `updated_at`.
 
 
 Also let's define schemas for out api. The difference between 
@@ -346,9 +347,9 @@ class UserOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 ```
 
-- UserCreate is the data taht api needs to receive to create a new user row in database.
-- UserUpdate is the data taht api needs to receive to update a user in database.
-- UserOut is the data that api will return when user object is requested (from_attributes
+- `UserCreate` is the data taht api needs to receive to create a new user row in database.
+- `UserUpdate` is the data taht api needs to receive to update a user in database.
+- `UserOut` is the data that api will return when user object is requested (from_attributes
   is a configuration that allows us map fields from model to schema)
 
 now we can write service for actions with user
@@ -397,7 +398,7 @@ async def get_users(db: AsyncSession = Depends(get_db)):
 ```
 
 here we are just calling the service function and return the result.
-If some error occur (for example database server crushed) we will return a 500 internal error.
+If some error occur (for example database server crushed) we will return a `500 internal error`.
 
 
 Now, before writing more endpoints, I want to try to run what we already have.
@@ -405,7 +406,7 @@ We will use docker compose for the development environment because we will
 have a lot of services and multiple database instances. Nobody want's to
 open 10 terminal and spin up postgres on a different ports.
 
-Let's start by writing Dockerfile. It is basically a docker image for the user microservice.
+Let's start by writing `Dockerfile`. It is basically a docker image for the user microservice.
 user-service/Dockerfile:
 ```Dockerfile
 FROM python:3.12-slim AS builder
@@ -436,13 +437,13 @@ EXPOSE 8000
 ```
 
 Here we have 2 stages of building an image:
-1. install postgres client, copy pyproject.toml and insall dependencies 
+1. install postgres client, copy `pyproject.toml` and insall dependencies 
 2. inherit builder with everything needed, copy wait-for-db.sh bash script and expose port
 
 We will spin up the application outside the Dockerfile to make it more reusable.
 For example in unit tests we need to build the image but we don't want to start http server.
 
-We are using path on one directory higher than docker file because we will have one global docker compose.
+We are using path on one directory higher than docker file because we will have one global `docker compose`.
 
 /wait-for-db.sh:
 ```bash
@@ -461,10 +462,10 @@ while true; do
 done
 ```
 
-in dockerfile we installed the postgresql-client to use pg_isready. This is the command that will
-check if postgres if fully ready to accept connections.
+in `dockerfile` we installed the `postgresql-client` to use `pg_isready`. This is the command that will
+check if `postgres` if fully ready to accept connections.
 
-Now, let's write docker compose with postgres and api
+Now, let's write `docker compose` with `postgres` and `api`
 /docker-compose.yml:
 ```yaml
 services:
