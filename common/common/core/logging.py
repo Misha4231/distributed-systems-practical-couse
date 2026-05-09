@@ -17,6 +17,6 @@ structlog.configure(
     ]
 )
 
-
 def get_logger() -> structlog.PrintLogger:
-    return structlog.get_logger()
+    logger: structlog.PrintLogger = structlog.get_logger()
+    return logger

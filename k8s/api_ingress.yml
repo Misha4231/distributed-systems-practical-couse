@@ -23,10 +23,3 @@ spec:
               name: books-api-service
               port: 
                 number: 8000
-        - pathType: Prefix
-          path: "/orders"
-          backend:
-            service:
-              name: coordinator-api-service
-              port: 
-                number: 8000

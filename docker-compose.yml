@@ -8,8 +8,7 @@ services:
     volumes:
       - users_postgres_data:/var/lib/postgresql
     restart: always
-    command: postgres -c max_prepared_transactions=1000
-  
+    
   books_service_db:
     image: postgres
     env_file:
@@ -19,33 +18,6 @@ services:
     volumes:
       - books_postgres_data:/var/lib/postgresql
     restart: always
-    command: postgres -c max_prepared_transactions=1000
-
-  coordinator_api:
-    build: 
-      dockerfile: coordinator/Dockerfile
-      context: .
-    env_file:
-      coordinator/.env
-    ports:
-      - "8002:8000"
-    develop:
-      watch:
-        - path: ./coordinator/coordinator
-          action: rebuild
-          target: /app/coordinator
-        
-        - path: ./common/common
-          action: rebuild
-          target: /app/common
-    working_dir: /app/coordinator
-    volumes:
-      - ./common:/app/common
-      - ./coordinator:/app/coordinator
-    command: >
-      sh -c "
-        uvicorn coordinator.main:app --host 0.0.0.0 --port 8000
-      "
 
   users_api:
     build: 
@@ -62,7 +34,6 @@ services:
         - path: ./user-service/user_service
           action: rebuild
           target: /app/user-service
-        
         - path: ./common/common
           action: rebuild
           target: /app/common
@@ -70,8 +41,6 @@ services:
     volumes:
       - ./common:/app/common
       - ./user-service:/app/user-service
-      - ./user-service/migrations:/app/migrations
-      - ./user-service/migrations/versions:/app/migrations/versions
     command: >
       sh -c "
         ../wait-for-db.sh &&
@@ -101,8 +70,6 @@ services:
     volumes:
       - ./common:/app/common
       - ./book-service:/app/book-service
-      - ./book-service/migrations:/app/migrations
-      - ./book-service/migrations/versions:/app/migrations/versions
     command: >
       sh -c "
         ../wait-for-db.sh &&
