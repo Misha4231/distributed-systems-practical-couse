@@ -11,7 +11,6 @@ from user_service.core.logging import logger
 
 router = APIRouter(prefix="/users", tags=["users"])
 
-
 @router.get("/", response_model=list[UserOut])
 async def get_users(db: AsyncSession = Depends(get_db)):
     logger.info("get_users_start")
@@ -104,3 +103,5 @@ async def delete_user(user_id: int, db: AsyncSession = Depends(get_db)):
     except Exception as e:
         logger.error("delete_user_error", user_id=user_id, error=str(e))
         raise HTTPException(status_code=500)
+
+

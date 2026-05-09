@@ -6,7 +6,6 @@ Create Date: 2026-04-29 13:04:30.349712
 
 """
 
-from datetime import datetime, UTC
 from typing import Sequence, Union
 
 from alembic import op

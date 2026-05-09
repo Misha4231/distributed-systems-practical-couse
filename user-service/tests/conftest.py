@@ -3,7 +3,6 @@ from mock import patch
 
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import AsyncSession, AsyncEngine
-from sqlalchemy import text
 
 from user_service.main import app
 from common.core.database import get_db
